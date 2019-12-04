@@ -11,10 +11,14 @@ function logger (req, res, next) {
   next();
 }
 
-function authorization(req, res, next) {
-  console.log(req);
+function gatekeeper(req, res, next) {
+  const password = req.headers.password;
 
-  next();
+  if(password && password.toLowerCase() === 'mellon') {
+    next();
+  } else {
+    res.status(401).json({ message: 'no password, try again' })
+  }
 }
 
 server.use(helmet());
@@ -36,7 +40,7 @@ server.get('/echo', (req, res) => {
   res.send(req.headers);
 });
 
-server.get('/area51', helmet(), authorization(), (req, res) => {
+server.get('/area51', gatekeeper , (req, res) => {
   res.send(req.headers);
 });
 
